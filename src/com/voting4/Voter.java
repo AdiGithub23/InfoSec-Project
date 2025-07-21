@@ -39,7 +39,6 @@ public class Voter {
         if (privateKey == null) throw new Exception("Voter ID not found: " + voterId);
         System.out.println("Voter " + voterId + " initialized.");
 
-        System.out.println("<Display Authenticated Voter Credentials>");
         System.out.println("Voter ID: " + voterId);
         System.out.println("Hashed Password: " + hashedPasswordBase64);
     }
