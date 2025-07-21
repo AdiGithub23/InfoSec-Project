@@ -15,6 +15,10 @@ public class VotingServer {
     public void storePublicKeys(Map<String, PublicKey> voterKeys, PublicKey adminPublicKey) {
         this.voterPublicKeys.putAll(voterKeys);
         System.out.println("Public keys stored in server.");
+
+        for (Map.Entry<String, PublicKey> entry : voterPublicKeys.entrySet()) {
+            System.out.println("Voter " + entry.getKey() + " Public Key: " + Base64.getEncoder().encodeToString(entry.getValue().getEncoded()));
+        }
     }
 
     // Verify voter and store vote
