@@ -22,6 +22,9 @@ public class ElectionAdmin {
         keyGen.initialize(2048);
         this.adminKeyPair = keyGen.generateKeyPair();
         System.out.println("Admin key pair generated.");
+        
+        System.out.println("Admin Public Key: " + Base64.getEncoder().encodeToString(adminKeyPair.getPublic().getEncoded()));
+        System.out.println("Admin Private Key: " + Base64.getEncoder().encodeToString(adminKeyPair.getPrivate().getEncoded()));
     }
 
     // Register voters and save credentials to file
@@ -43,6 +46,9 @@ public class ElectionAdmin {
                 out.println(voterId + "," + Base64.getEncoder().encodeToString(voterKeyPair.getPrivate().getEncoded()) + "," + Base64.getEncoder().encodeToString(voterKeyPair.getPublic().getEncoded()) + "," + hashedPasswordBase64);
             }
             System.out.println("Registered Voter: " + voterId);
+
+            System.out.println("Voter " + voterId + " Public Key: " + Base64.getEncoder().encodeToString(voterKeyPair.getPublic().getEncoded()));
+            System.out.println("Voter " + voterId + " Private Key: " + Base64.getEncoder().encodeToString(voterKeyPair.getPrivate().getEncoded()));
         }
         System.out.println("\nRegistered All " + numVoters + " voters");
     }
@@ -80,6 +86,8 @@ public class ElectionAdmin {
             aesCipher.init(Cipher.DECRYPT_MODE, aesKey);
             byte[] decryptedVoteBytes = aesCipher.doFinal(encryptedVote);
             String vote = new String(decryptedVoteBytes);
+
+            System.out.println("Decrypted Vote: " + vote);
 
             // Verify signature against all voter public keys
             boolean verified = false;

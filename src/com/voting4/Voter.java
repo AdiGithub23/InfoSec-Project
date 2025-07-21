@@ -17,6 +17,7 @@ public class Voter {
     public Voter(String voterId, String password, PublicKey adminPublicKey) throws Exception {
         this.voterId = voterId;
         this.adminPublicKey = adminPublicKey;
+        String hashedPasswordBase64 = null;
         try (BufferedReader br = new BufferedReader(new FileReader("voters.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -26,8 +27,8 @@ public class Voter {
                     String storedHashedPassword = parts[3];
                     MessageDigest digest = MessageDigest.getInstance("SHA-256");
                     byte[] hashedInputPassword = digest.digest(password.getBytes());
-                    String hashedInputPasswordBase64 = Base64.getEncoder().encodeToString(hashedInputPassword);
-                    if (!hashedInputPasswordBase64.equals(storedHashedPassword)) {
+                    hashedPasswordBase64 = Base64.getEncoder().encodeToString(hashedInputPassword);
+                    if (!hashedPasswordBase64.equals(storedHashedPassword)) {
                         throw new Exception("Incorrect password for voter " + voterId);
                     }
                     this.privateKey = KeyFactory.getInstance("RSA").generatePrivate(new java.security.spec.PKCS8EncodedKeySpec(Base64.getDecoder().decode(parts[1])));
@@ -37,6 +38,10 @@ public class Voter {
         }
         if (privateKey == null) throw new Exception("Voter ID not found: " + voterId);
         System.out.println("Voter " + voterId + " initialized.");
+
+        System.out.println("<Display Authenticated Voter Credentials>");
+        System.out.println("Voter ID: " + voterId);
+        System.out.println("Hashed Password: " + hashedPasswordBase64);
     }
 
     // Authenticate with nonce
@@ -67,6 +72,9 @@ public class Voter {
         byte[] encryptedAesKey = rsaCipher.doFinal(aesKey.getEncoded());
 
         System.out.println("Voter " + voterId + " encrypted vote: " + vote);
+        System.out.println("AES Encrypted Vote: " + Base64.getEncoder().encodeToString(encryptedVote));
+        System.out.println("RSA Encrypted AES Key: " + Base64.getEncoder().encodeToString(encryptedAesKey));
+        
         return new byte[][] { encryptedVote, encryptedAesKey };
     }
 
@@ -79,6 +87,7 @@ public class Voter {
         sig.update(voteHash);
         byte[] signature = sig.sign();
         System.out.println("Voter " + voterId + " signed vote.");
+        System.out.println("Vote Signature: " + Base64.getEncoder().encodeToString(signature));
         return signature;
     }
 
